@@ -22,9 +22,39 @@ function! s:OpenWindow() abort "{{{2
         let l:vim_options = has('terminal') ? '++curwin ++kill=kill' : ''
 
         execute  'terminal' . l:vim_options
+
         call s:InitWindow()
         call s:NuakeBufNr()
     endif
+
+endfunction
+
+function! nuake#ToggleWindowCMD(cmd) abort "{{{2
+    let l:nuake_win_nr = bufwinnr(s:NuakeBufNr())
+
+    if l:nuake_win_nr != -1
+        call s:CloseWindow()
+    else
+        call s:OpenWindowCMD(a:cmd)
+    endif
+endfunction
+
+function! s:OpenWindowCMD(cmd) abort "{{{2
+    let l:nuake_buf_nr = bufnr(s:NuakeBufNr())
+
+    execute  'silent keepalt ' . s:NuakeLook() . 'split'
+
+    if l:nuake_buf_nr != -1
+        execute  'buffer ' . l:nuake_buf_nr
+    else
+        let l:vim_options = has('terminal') ? '++curwin ++kill=kill' : ''
+
+        execute  'terminal' . l:vim_options
+
+        call s:InitWindow()
+        call s:NuakeBufNr()
+    endif
+    call jobsend(b:terminal_job_id, a:cmd . "\n")
 
 endfunction
 
